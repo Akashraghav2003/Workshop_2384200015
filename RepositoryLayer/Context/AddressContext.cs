@@ -16,5 +16,15 @@ namespace RepositoryLayer.Context
 
         public virtual DbSet<UserEntity> UserEntities { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AddressEntity>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.AddressBookEntries)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Change to DeleteBehavior.Restrict if needed
+        }
+
+
     }
 }

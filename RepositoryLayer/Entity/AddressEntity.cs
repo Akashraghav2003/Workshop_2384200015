@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RepositoryLayer.Entity
@@ -19,16 +20,18 @@ namespace RepositoryLayer.Entity
         [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required, Phone]
+        [Required]
         public string PhoneNumber { get; set; }
 
         public string Address { get; set; }
 
         // Foreign Key Attribute
-        [ForeignKey("User")]
+        [ForeignKey("UserId")]
         public int UserId { get; set; }
 
         // Navigation Property
+
+        //[JsonIgnore]
         public virtual UserEntity User { get; set; }
     }
 }

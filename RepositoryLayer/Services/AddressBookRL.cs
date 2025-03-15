@@ -44,8 +44,8 @@ namespace RepositoryLayer.Services
                     UserId = addressDTO.UserId
                 };
 
-                _dbContext.Add(newAddress);
-                _dbContext.SaveChanges();
+                _dbContext.AddressEntities.Add(newAddress);
+                await _dbContext.SaveChangesAsync();
 
                 return newAddress;
             }catch(ArgumentException ex)
@@ -70,7 +70,7 @@ namespace RepositoryLayer.Services
                 }
 
                 _dbContext.Remove(result);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
 
                 return true;
             }catch(Exception ex)
@@ -140,7 +140,7 @@ namespace RepositoryLayer.Services
 
 
                 _dbContext.Update(result);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
 
                 return result;
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RepositoryLayer.Entity
@@ -23,6 +24,7 @@ namespace RepositoryLayer.Entity
 
         public string Password { get; set; }
 
+        
         public virtual ICollection<AddressEntity> AddressBookEntries { get; set; }
 
     }
