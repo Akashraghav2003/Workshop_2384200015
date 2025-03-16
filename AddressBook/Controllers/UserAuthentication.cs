@@ -61,6 +61,12 @@ namespace AddressBook.Controllers
             }
         }
 
+
+        /// <summary>
+        /// User Login Register
+        /// </summary>
+        /// <param name="loginDTO"></param>
+        /// <returns></returns>
         [HttpPost("Login User")]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {
@@ -99,6 +105,76 @@ namespace AddressBook.Controllers
                 response.Data = "Give the correct ID, Password";
 
                 return StatusCode(500,response);
+            }
+        }
+
+        [HttpPost("ForgetPassword")]
+
+        public async Task<IActionResult> ForgetPassword(string Email)
+        {
+            ResponseModel<string> response = new ResponseModel<string>();
+            try
+            {
+                var result = await _userAuthenticationBL.ForgetPassword(Email);
+
+                response.Success = true;
+                response.Message = "Check your Email.";
+                response.Data = result;
+
+                return Ok(response);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                response.Success = false;
+                response.Message = "Email does not match";
+                response.Data = "Give correct email";
+
+                return NotFound(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Some error occurred.";
+                
+
+                return StatusCode(500,response);
+            }
+        }
+
+        /// <summary>
+        /// Reset Password
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="newPassword"></param>
+        /// <param name="confirmPassword"></param>
+        /// <returns>Response body</returns>
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(string token, string newPassword, string confirmPassword)
+        {
+            ResponseModel<string> responseModel = new ResponseModel<string>();
+            try
+            {
+                var result = await _userAuthenticationBL.ResetPassword(token, newPassword, confirmPassword);
+
+                responseModel.Success = true;
+                responseModel.Message = "Password Reset Successfully.";
+                responseModel.Data = "";
+
+                return Ok(responseModel);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                responseModel.Success = false;
+                responseModel.Message = "Email Does not match.";
+                responseModel.Data = ex.Message;
+                return Unauthorized(responseModel);
+            }
+            catch (Exception ex)
+            {
+                responseModel.Success = false;
+                responseModel.Message = "Some Error Occurred";
+                responseModel.Data = ex.Message;
+                return Unauthorized(responseModel);
             }
         }
     }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using RepositoryLayer.Context;
 using RepositoryLayer.Interface;
+using RepositoryLayer.Service;
 using RepositoryLayer.Services;
 using System.Reflection;
 
@@ -28,6 +29,7 @@ builder.Services.AddScoped<IAddressBookRL, AddressBookRL>();
 
 builder.Services.AddScoped<IUserAuthenticationBL, UserAuthenticationBL>();
 builder.Services.AddScoped<IUserAuthenticationRL, UserAuthenticationRL>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddEndpointsApiExplorer();

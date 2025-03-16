@@ -12,5 +12,10 @@ namespace RepositoryLayer.Interface
     {
         Task<UserEntity> UserRegister(UserDTO userDTO);
         Task<UserEntity> Login(LoginDTO loginDTO);
+        Task<UserEntity> ForgetPassword(string Email);
+
+        Task<UserEntity> ResetPassword(String Email, string Password, string ConfirmPassword);
+
+
     }
 }

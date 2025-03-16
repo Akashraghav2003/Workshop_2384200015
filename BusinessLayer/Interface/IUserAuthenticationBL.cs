@@ -12,5 +12,8 @@ namespace BusinessLayer.Interface
     {
         Task<UserEntity> UserRegister(UserDTO userDTO);
         Task<string> Login(LoginDTO loginDTO);
+        Task<string> ForgetPassword(string Email);
+
+        Task<bool> ResetPassword(string token, string Password, string confirmPassword);
     }
 }

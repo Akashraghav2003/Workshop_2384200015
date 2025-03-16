@@ -17,11 +17,38 @@ namespace BusinessLayer.Services
     {
         private readonly IUserAuthenticationRL _userAuthenticationRL;
         private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
 
-        public UserAuthenticationBL(IUserAuthenticationRL userAuthenticationRL, ITokenService tokenService)
+        public UserAuthenticationBL(IUserAuthenticationRL userAuthenticationRL, ITokenService tokenService, IEmailService emailService)
         {
             _userAuthenticationRL = userAuthenticationRL;
             _tokenService = tokenService;
+            _emailService = emailService;
+        }
+
+        public async Task<string> ForgetPassword(string Email)
+        {
+            try
+            {
+                var result = await _userAuthenticationRL.ForgetPassword(Email);
+                string body =  _tokenService.GenerateToken(result);
+
+                EmailModel emailModel = new EmailModel
+                {
+                    To = Email,
+                    Subject = "Password reset link send on Email.",
+                    Body = body
+                };
+
+                _emailService.SendEmail(emailModel);
+                return "Check your Email."; 
+            }catch(KeyNotFoundException ex)
+            {
+                throw;
+            }catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<string> Login(LoginDTO loginDTO)
@@ -65,6 +92,26 @@ namespace BusinessLayer.Services
                 throw;
             }
             
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async  Task<bool> ResetPassword(string token, string Password, string confirmPassword)
+        {
+            try
+            {
+                var email = _tokenService.ValidateToken(token);
+                var newPassword = BCrypt.Net.BCrypt.HashPassword(Password);
+                var result = await _userAuthenticationRL.ResetPassword(email, newPassword, confirmPassword);
+
+                return true;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw;
