@@ -7,6 +7,7 @@ using RepositoryLayer.Context;
 using RepositoryLayer.Interface;
 using RepositoryLayer.Service;
 using RepositoryLayer.Services;
+using StackExchange.Redis;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,11 +18,19 @@ var connectionString = builder.Configuration.GetConnectionString("sqlConnection"
 builder.Services.AddDbContext<AddressContext>(option => option.UseSqlServer(connectionString));
 
 builder.Services.AddControllers();
-//builder.Services.AddControllers().AddJsonOptions(options =>
-//{
-//    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-//});
 
+var redisConnection = builder.Configuration["Redis:ConnectionString"];
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnection));
+//builder.Services.AddStackExchangeRedisCache(options => { options.Configuration = redisConnection; });
+
+builder.Services.AddDistributedMemoryCache(); // For session storage
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 builder.Services.AddScoped<AddressContext>();
 builder.Services.AddScoped<IAddressBookBL, AddressBookBL>();
@@ -31,6 +40,7 @@ builder.Services.AddScoped<IUserAuthenticationBL, UserAuthenticationBL>();
 builder.Services.AddScoped<IUserAuthenticationRL, UserAuthenticationRL>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ICacheService, CacheService> ();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -81,6 +91,8 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+app.UseSession();
 
 app.UseSwagger();
 app.UseSwaggerUI();

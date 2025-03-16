@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ModelLayer.Model;
+using RepositoryLayer.Interface;
 
 namespace AddressBook.Controllers
 {
@@ -10,10 +11,12 @@ namespace AddressBook.Controllers
     public class UserAuthentication : ControllerBase
     {
         private readonly IUserAuthenticationBL _userAuthenticationBL;
+        private readonly ICacheService _cacheService;
 
-        public UserAuthentication(IUserAuthenticationBL userAuthenticationBL)
+        public UserAuthentication(IUserAuthenticationBL userAuthenticationBL, ICacheService cacheService)
         {
             _userAuthenticationBL = userAuthenticationBL;
+            _cacheService = cacheService;
         }
 
         /// <summary>
@@ -175,6 +178,30 @@ namespace AddressBook.Controllers
                 responseModel.Message = "Some Error Occurred";
                 responseModel.Data = ex.Message;
                 return Unauthorized(responseModel);
+            }
+        }
+
+        /// <summary>
+        /// User Logout (Invalidate Token)
+        /// </summary>
+        [HttpPost("LogoutUser")]
+        public async Task<IActionResult> Logout(string email)
+        {
+            var response = new ResponseModel<string>();
+            try
+            {
+                await _cacheService.RemoveAsync(email); // Remove cached token
+                response.Success = true;
+                response.Message = "User logged out successfully.";
+                response.Data = "";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Error occurred during logout.";
+                response.Data = ex.Message;
+                return StatusCode(500, response);
             }
         }
     }

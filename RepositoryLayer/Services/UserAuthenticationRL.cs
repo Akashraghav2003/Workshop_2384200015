@@ -14,10 +14,12 @@ namespace RepositoryLayer.Services
     public class UserAuthenticationRL : IUserAuthenticationRL
     {
         public readonly AddressContext _dbContext;
+        
 
         public UserAuthenticationRL(AddressContext dbContext)
         {
             _dbContext = dbContext;
+            
         }
 
         public async Task<UserEntity> ForgetPassword(string Email)

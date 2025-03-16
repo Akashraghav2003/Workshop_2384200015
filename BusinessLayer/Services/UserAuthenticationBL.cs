@@ -18,16 +18,20 @@ namespace BusinessLayer.Services
         private readonly IUserAuthenticationRL _userAuthenticationRL;
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
+        public readonly ICacheService _cacheService;
 
-        public UserAuthenticationBL(IUserAuthenticationRL userAuthenticationRL, ITokenService tokenService, IEmailService emailService)
+        public UserAuthenticationBL(IUserAuthenticationRL userAuthenticationRL, ITokenService tokenService, IEmailService emailService, ICacheService cacheService)
         {
             _userAuthenticationRL = userAuthenticationRL;
             _tokenService = tokenService;
             _emailService = emailService;
+            _cacheService = cacheService;
         }
 
         public async Task<string> ForgetPassword(string Email)
         {
+            await _cacheService.RemoveAsync(Email);
+
             try
             {
                 var result = await _userAuthenticationRL.ForgetPassword(Email);
@@ -41,6 +45,9 @@ namespace BusinessLayer.Services
                 };
 
                 _emailService.SendEmail(emailModel);
+
+                await _cacheService.SetAsync(Email, "Reset link sent", TimeSpan.FromMinutes(10));
+
                 return "Check your Email."; 
             }catch(KeyNotFoundException ex)
             {
@@ -57,11 +64,24 @@ namespace BusinessLayer.Services
             {
                 throw new ArgumentNullException("checked the correct credentials.");
             }
+
+
+            var cachedToken = await _cacheService.GetAsync<string>(loginDTO.Email);
+            if (!string.IsNullOrEmpty(cachedToken))
+            {
+                return cachedToken; // Return cached token if available
+            }
+
             try
             {
                 var result = await _userAuthenticationRL.Login(loginDTO);
 
-                if (BCrypt.Net.BCrypt.Verify(loginDTO.Password, result.Password)) return _tokenService.GenerateToken(result);
+                if (BCrypt.Net.BCrypt.Verify(loginDTO.Password, result.Password))
+                {
+                    var token = _tokenService.GenerateToken(result);
+                    await _cacheService.SetAsync(result.Email, token, TimeSpan.FromMinutes(20));
+                    return token;
+                }
 
                 return null;
                 
@@ -111,6 +131,20 @@ namespace BusinessLayer.Services
             catch (KeyNotFoundException ex)
             {
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> Logout(string email)
+        {
+            try
+            {
+                // Remove Token from Cache (Invalidate Session)
+                await _cacheService.RemoveAsync(email);
+                return true;
             }
             catch (Exception ex)
             {
