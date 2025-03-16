@@ -13,24 +13,34 @@ namespace BusinessLayer.Services
     public class AddressBookBL : IAddressBookBL
     {
         private readonly IAddressBookRL _addressRL;
-        public AddressBookBL(IAddressBookRL addressRL)
+        private readonly IRabbitMQProducer _rabbitMQProducer;
+        public AddressBookBL(IAddressBookRL addressRL,IRabbitMQProducer rabbitMQProducer)
         {
-            _addressRL = addressRL;  
+            _addressRL = addressRL;
+            _rabbitMQProducer = rabbitMQProducer;
         }
 
         public async Task<AddressEntity> AddAddress(AddresDTO addressDTO)
         {
+            if (addressDTO == null)
+                throw new ArgumentNullException(nameof(addressDTO), "Invalid address details.");
+
             try
             {
                 var result = await _addressRL.AddAddress(addressDTO);
 
+                // Publish event to RabbitMQ when a new contact is added
+                _rabbitMQProducer.SendProductMessage(new
+                {
+                    Message = "New Contact Added",
+                    Name = addressDTO.Name,
+                    Email = addressDTO.Email,
+                    PhoneNumber = addressDTO.PhoneNumber
+                });
+
                 return result;
             }
-            catch (ArgumentException ex)
-            {
-                throw;
-            }
-            catch (InvalidOperationException ex)
+            catch
             {
                 throw;
             }

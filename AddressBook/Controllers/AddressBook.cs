@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ModelLayer.Model;
@@ -25,6 +26,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("AddressBook")]
+        [Authorize]
         public async Task<IActionResult> AllContacts()
         {
             ResponseModel<IEnumerable<AddressEntity>> response = new ResponseModel<IEnumerable<AddressEntity>>();
@@ -53,6 +55,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetById")]
+        [Authorize]
         public async Task<IActionResult> GetById(int ID) 
         {
             ResponseModel<AddressEntity> response = new ResponseModel<AddressEntity>();
@@ -81,6 +84,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("NewContact")]
+        [Authorize]
 
         public async Task<IActionResult> AddContact(AddresDTO addresDTO) 
         {
@@ -113,6 +117,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("UpdateContact")]
+        [Authorize]
         public async Task<IActionResult> UpdateContact(AddresDTO addressDTO)
         {
             ResponseModel<string> responseModel = new ResponseModel<string>();
@@ -142,6 +147,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete("DeleteContact")]
+        [Authorize]
 
         public async Task<IActionResult> DeleteContact(int id)
         {

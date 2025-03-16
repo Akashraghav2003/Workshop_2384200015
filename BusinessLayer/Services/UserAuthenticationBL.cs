@@ -19,13 +19,15 @@ namespace BusinessLayer.Services
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
         public readonly ICacheService _cacheService;
+        private readonly IRabbitMQProducer _rabbitMQProducer;
 
-        public UserAuthenticationBL(IUserAuthenticationRL userAuthenticationRL, ITokenService tokenService, IEmailService emailService, ICacheService cacheService)
+        public UserAuthenticationBL(IUserAuthenticationRL userAuthenticationRL, ITokenService tokenService, IEmailService emailService, ICacheService cacheService, IRabbitMQProducer rabbitMQProducer)
         {
             _userAuthenticationRL = userAuthenticationRL;
             _tokenService = tokenService;
             _emailService = emailService;
             _cacheService = cacheService;
+            _rabbitMQProducer = rabbitMQProducer;
         }
 
         public async Task<string> ForgetPassword(string Email)
@@ -96,23 +98,27 @@ namespace BusinessLayer.Services
 
         public async Task<UserEntity> UserRegister(UserDTO userDTO)
         {
-            if(userDTO == null)
-            {
-                throw new ArgumentNullException("checked the correct credentials.");
-            }
+            if (userDTO == null)
+                throw new ArgumentNullException(nameof(userDTO), "Invalid user details.");
+
             try
             {
                 userDTO.Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password);
                 var result = await _userAuthenticationRL.UserRegister(userDTO);
 
+                // Publish event to RabbitMQ to send email
+                var emailModel = new EmailModel
+                {
+                    To = userDTO.Email,
+                    Subject = "Welcome to Our Platform",
+                    Body = userDTO.ToString()
+                };
+
+                _rabbitMQProducer.SendProductMessage(emailModel);
+
                 return result;
             }
-            catch (InvalidOperationException ex)
-            {
-                throw;
-            }
-            
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
