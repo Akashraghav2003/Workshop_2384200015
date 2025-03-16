@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryLayer", "..\Repos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelLayer", "..\ModelLayer\ModelLayer.csproj", "{71F3DE81-525C-4EE4-B7EB-48BCF3E9C4AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTesting", "..\NUnitTesting\NUnitTesting.csproj", "{9A599D31-D123-4996-8B70-7FA14F43EBDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{71F3DE81-525C-4EE4-B7EB-48BCF3E9C4AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71F3DE81-525C-4EE4-B7EB-48BCF3E9C4AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71F3DE81-525C-4EE4-B7EB-48BCF3E9C4AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A599D31-D123-4996-8B70-7FA14F43EBDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A599D31-D123-4996-8B70-7FA14F43EBDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A599D31-D123-4996-8B70-7FA14F43EBDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A599D31-D123-4996-8B70-7FA14F43EBDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

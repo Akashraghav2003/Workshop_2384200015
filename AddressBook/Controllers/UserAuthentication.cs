@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ModelLayer.Model;
@@ -25,6 +26,7 @@ namespace AddressBook.Controllers
         /// <param name="userDTO"></param>
         /// <returns></returns>
         [HttpPost("Register User")]
+        
         public async Task<IActionResult> RegisterUser(UserDTO userDTO)
         {
             ResponseModel<string> response = new ResponseModel<string>();

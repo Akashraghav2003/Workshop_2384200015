@@ -26,7 +26,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("AddressBook")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AllContacts()
         {
             ResponseModel<IEnumerable<AddressEntity>> response = new ResponseModel<IEnumerable<AddressEntity>>();
@@ -147,7 +147,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete("DeleteContact")]
-        [Authorize]
+        [Authorize(Roles = "User,Admin")]
 
         public async Task<IActionResult> DeleteContact(int id)
         {

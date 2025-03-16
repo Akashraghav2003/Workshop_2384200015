@@ -109,10 +109,6 @@ builder.Services.AddSwaggerGen(options =>
 // Build Application
 var app = builder.Build();
 
-
-//var rabbitConsumer = app.Services.GetRequiredService<IRabbitMQConsumer>();
-//Task.Run(() => rabbitConsumer.StartListening());
-
 // Configure Middleware Pipeline
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
