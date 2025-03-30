@@ -23,6 +23,9 @@ namespace BusinessLayer.Services
 
         public string GenerateToken(UserEntity userEntity)
         {
+            //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
             var jwtSettings = _configuration.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
             var issuer = jwtSettings["Issuer"];
@@ -33,7 +36,8 @@ namespace BusinessLayer.Services
             {
                 new Claim(ClaimTypes.Name, userEntity.UserName),
                 new Claim(ClaimTypes.Email, userEntity.Email),
-                new Claim(ClaimTypes.NameIdentifier, userEntity.UserId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, userEntity.UserId.ToString()),
+                new Claim(ClaimTypes.Role, userEntity.Role)
             };
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -58,6 +62,7 @@ namespace BusinessLayer.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
 
+
             try
             {
                 var claimsPrincipal = tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -73,7 +78,6 @@ namespace BusinessLayer.Services
 
                 var emailClaim = claimsPrincipal.FindFirst(ClaimTypes.Email);
 
-                // 🔹 Check if email is null and throw an exception
                 if (emailClaim == null)
                     throw new NullReferenceException("Email claim not found in token.");
 
@@ -81,7 +85,6 @@ namespace BusinessLayer.Services
             }
             catch (Exception ex)
             {
-                // Optionally log the exception here
                 throw new Exception("Invalid or expired token.", ex);
             }
         }

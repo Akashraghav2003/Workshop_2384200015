@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RepositoryLayer.Context;
 
@@ -10,9 +11,10 @@ using RepositoryLayer.Context;
 namespace RepositoryLayer.Migrations
 {
     [DbContext(typeof(AddressContext))]
-    partial class AddressContextModelSnapshot : ModelSnapshot
+    [Migration("20250321052215_UpdaetRole")]
+    partial class UpdaetRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +57,7 @@ namespace RepositoryLayer.Migrations
                     b.ToTable("AddressEntities");
                 });
 
-            modelBuilder.Entity("UserEntity", b =>
+            modelBuilder.Entity("RepositoryLayer.Entity.UserEntity", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -86,7 +88,7 @@ namespace RepositoryLayer.Migrations
 
             modelBuilder.Entity("RepositoryLayer.Entity.AddressEntity", b =>
                 {
-                    b.HasOne("UserEntity", "User")
+                    b.HasOne("RepositoryLayer.Entity.UserEntity", "User")
                         .WithMany("AddressBookEntries")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -95,7 +97,7 @@ namespace RepositoryLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("UserEntity", b =>
+            modelBuilder.Entity("RepositoryLayer.Entity.UserEntity", b =>
                 {
                     b.Navigation("AddressBookEntries");
                 });

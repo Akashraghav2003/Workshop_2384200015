@@ -55,7 +55,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetById")]
-        [Authorize]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetById(int ID) 
         {
             ResponseModel<AddressEntity> response = new ResponseModel<AddressEntity>();
@@ -84,7 +84,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("NewContact")]
-        [Authorize]
+        [Authorize(Roles = "User")]
 
         public async Task<IActionResult> AddContact(AddresDTO addresDTO) 
         {
@@ -117,7 +117,7 @@ namespace AddressBook.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("UpdateContact")]
-        [Authorize]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> UpdateContact(AddresDTO addressDTO)
         {
             ResponseModel<string> responseModel = new ResponseModel<string>();

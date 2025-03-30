@@ -72,7 +72,8 @@ namespace RepositoryLayer.Services
                 {
                     UserName = userDTO.UserName,
                     Email = userDTO.Email,
-                    Password = userDTO.Password
+                    Password = userDTO.Password,
+                    Role = userDTO.Role
                 };
 
                 _dbContext.UserEntities.Add(newUser);

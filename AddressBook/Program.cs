@@ -1,6 +1,8 @@
 using BusinessLayer.Interface;
 using BusinessLayer.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RepositoryLayer.Context;
 using RepositoryLayer.Interface;
@@ -8,8 +10,13 @@ using RepositoryLayer.Service;
 using RepositoryLayer.Services;
 using StackExchange.Redis;
 using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// Get secret key from configuration
+var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 
 // Load configuration from appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("sqlConnection");
@@ -58,8 +65,27 @@ builder.Services.AddSession(options =>
 });
 
 // Add Authentication & Authorization
-builder.Services.AddAuthentication("Bearer").AddJwtBearer();
+//builder.Services.AddAuthentication("Bearer").AddJwtBearer();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
 builder.Services.AddAuthorization();
+
 
 // Add Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -106,13 +132,29 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Build Application
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:4200")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
+
+
 var app = builder.Build();
+
+app.UseCors(MyAllowSpecificOrigins); // Add this line before UseAuthorization
 
 // Configure Middleware Pipeline
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwagger();

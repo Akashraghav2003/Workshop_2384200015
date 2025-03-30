@@ -127,7 +127,11 @@ namespace AddressBookTests
         public async Task GetContactById_ShouldReturnContact_WhenValidId()
         {
             int contactId = 1;
-            var contact = new AddressEntity { Name = "Neha Nair", Email = "neha.nair@gmail.com", Address = "Kochi, Kerala" };
+            var contact = new AddressEntity { 
+                Name = "Neha kumari",
+                Email = "neha.nair@gmail.com", 
+                Address = "Kochi, Kerala"
+            };
 
             _addressServiceMock.Setup(service => service.GetContactByID(contactId)).ReturnsAsync(contact);
 

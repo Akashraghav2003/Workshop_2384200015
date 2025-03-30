@@ -68,24 +68,29 @@ namespace BusinessLayer.Services
             }
 
 
-            var cachedToken = await _cacheService.GetAsync<string>(loginDTO.Email);
-            if (!string.IsNullOrEmpty(cachedToken))
-            {
-                return cachedToken; // Return cached token if available
-            }
+           
 
             try
             {
                 var result = await _userAuthenticationRL.Login(loginDTO);
 
-                if (BCrypt.Net.BCrypt.Verify(loginDTO.Password, result.Password))
-                {
-                    var token = _tokenService.GenerateToken(result);
-                    await _cacheService.SetAsync(result.Email, token, TimeSpan.FromMinutes(20));
-                    return token;
-                }
 
-                return null;
+                if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, result.Password))
+                {
+                    return null;
+                }
+                var cachedToken = await _cacheService.GetAsync<string>(loginDTO.Email);
+                if (!string.IsNullOrEmpty(cachedToken))
+                {
+                    return cachedToken; // Return cached token if available
+                }
+                var token = _tokenService.GenerateToken(result);
+                await _cacheService.SetAsync(result.Email, token, TimeSpan.FromMinutes(20));
+                return token;
+                
+
+
+                
                 
             }catch(KeyNotFoundException ex)
             {
